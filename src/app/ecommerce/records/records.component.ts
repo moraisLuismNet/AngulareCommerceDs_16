@@ -114,7 +114,7 @@ export class RecordsComponent implements OnInit, OnDestroy {
           ? data.data
           : [];
 
-        // Obtener los grupos para asignar los nombres
+        // Get the groups to assign names
         this.groupsService.getGroups().subscribe({
           next: (groupsResponse: any) => {
             const groups = Array.isArray(groupsResponse)
@@ -123,7 +123,7 @@ export class RecordsComponent implements OnInit, OnDestroy {
               ? groupsResponse.$values
               : [];
 
-            // Asignar el nombre del grupo a cada registro
+            // Assign the group name to each record
             recordsArray.forEach((record: IRecord) => {
               const group = groups.find(
                 (g: { idGroup: number | null }) => g.idGroup === record.groupId

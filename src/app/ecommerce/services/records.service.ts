@@ -185,7 +185,7 @@ export class RecordsService {
             records = [];
           }
 
-          // Si la respuesta tiene el nombre del grupo, guárdalo
+          // If the answer has the group name, save it.
           if (response && response.nameGroup) {
             groupName = response.nameGroup;
           } else if (
@@ -197,7 +197,7 @@ export class RecordsService {
             groupName = response.group.nameGroup;
           }
 
-          // Asignar el nombre del grupo a cada registro
+          // Assign the group name to each record
           records.forEach((record) => {
             record.groupName = groupName || "";
           });
