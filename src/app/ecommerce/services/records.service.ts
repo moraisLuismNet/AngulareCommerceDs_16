@@ -1,13 +1,13 @@
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, tap, map, catchError, throwError } from 'rxjs';
-import { environment } from 'src/environments/environment';
-import { AuthGuard } from 'src/app/guards/auth-guard.service';
-import { IRecord } from '../ecommerce.interface';
-import { StockService } from './stock.service';
+import { Injectable } from "@angular/core";
+import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { Observable, tap, map, catchError, throwError } from "rxjs";
+import { environment } from "src/environments/environment";
+import { AuthGuard } from "src/app/guards/auth-guard.service";
+import { IRecord } from "../ecommerce.interface";
+import { StockService } from "./stock.service";
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: "root",
 })
 export class RecordsService {
   urlAPI = environment.urlAPI;
@@ -35,17 +35,17 @@ export class RecordsService {
   addRecord(record: IRecord): Observable<IRecord> {
     const headers = this.getHeaders();
     const formData = new FormData();
-    formData.append('titleRecord', record.titleRecord);
+    formData.append("titleRecord", record.titleRecord);
     if (record.yearOfPublication !== null) {
-      formData.append('yearOfPublication', record.yearOfPublication.toString());
+      formData.append("yearOfPublication", record.yearOfPublication.toString());
     } else {
-      formData.append('yearOfPublication', '');
+      formData.append("yearOfPublication", "");
     }
-    formData.append('photo', record.photo!);
-    formData.append('price', record.price.toString());
-    formData.append('stock', record.stock.toString());
-    formData.append('discontinued', record.discontinued ? 'true' : 'false');
-    formData.append('groupId', record.groupId?.toString()!);
+    formData.append("photo", record.photo!);
+    formData.append("price", record.price.toString());
+    formData.append("stock", record.stock.toString());
+    formData.append("discontinued", record.discontinued ? "true" : "false");
+    formData.append("groupId", record.groupId?.toString()!);
 
     return this.http
       .post<any>(`${this.urlAPI}records`, formData, {
@@ -70,19 +70,19 @@ export class RecordsService {
       Authorization: `Bearer ${this.authGuard.getToken()}`,
     });
     const formData = new FormData();
-    formData.append('titleRecord', record.titleRecord);
+    formData.append("titleRecord", record.titleRecord);
     if (record.yearOfPublication !== null) {
-      formData.append('yearOfPublication', record.yearOfPublication.toString());
+      formData.append("yearOfPublication", record.yearOfPublication.toString());
     } else {
-      formData.append('yearOfPublication', '');
+      formData.append("yearOfPublication", "");
     }
-    formData.append('price', record.price.toString());
-    formData.append('stock', record.stock.toString());
-    formData.append('discontinued', record.discontinued ? 'true' : 'false');
-    formData.append('groupId', record.groupId?.toString()!);
+    formData.append("price", record.price.toString());
+    formData.append("stock", record.stock.toString());
+    formData.append("discontinued", record.discontinued ? "true" : "false");
+    formData.append("groupId", record.groupId?.toString()!);
 
     if (record.photo) {
-      formData.append('photo', record.photo);
+      formData.append("photo", record.photo);
     }
 
     return this.http
@@ -124,6 +124,7 @@ export class RecordsService {
       .pipe(
         map((response) => {
           let records: IRecord[];
+          let groupName = "";
           // Handle direct record array response
           if (Array.isArray(response)) {
             records = response;
@@ -135,22 +136,22 @@ export class RecordsService {
           // Handle records nested in group response
           else if (
             response &&
-            typeof response === 'object' &&
+            typeof response === "object" &&
             response.records
           ) {
             if (Array.isArray(response.records)) {
               records = response.records;
             } else if (response.records.$values) {
               records = response.records.$values;
-            } else if (typeof response.records === 'object') {
+            } else if (typeof response.records === "object") {
               records = Object.values(response.records).filter(
                 (val): val is IRecord => {
-                  if (!val || typeof val !== 'object') return false;
+                  if (!val || typeof val !== "object") return false;
                   const v = val as any;
                   return (
-                    typeof v.idRecord === 'number' &&
-                    typeof v.titleRecord === 'string' &&
-                    typeof v.stock === 'number'
+                    typeof v.idRecord === "number" &&
+                    typeof v.titleRecord === "string" &&
+                    typeof v.stock === "number"
                   );
                 }
               );
@@ -161,21 +162,21 @@ export class RecordsService {
           // Handle single record response
           else if (
             response &&
-            typeof response === 'object' &&
-            'idRecord' in response
+            typeof response === "object" &&
+            "idRecord" in response
           ) {
             records = [response];
           }
           // Handle other object responses
-          else if (response && typeof response === 'object') {
+          else if (response && typeof response === "object") {
             const values = Object.values(response);
             records = values.filter((val): val is IRecord => {
-              if (!val || typeof val !== 'object') return false;
+              if (!val || typeof val !== "object") return false;
               const v = val as any;
               return (
-                typeof v.idRecord === 'number' &&
-                typeof v.titleRecord === 'string' &&
-                typeof v.stock === 'number'
+                typeof v.idRecord === "number" &&
+                typeof v.titleRecord === "string" &&
+                typeof v.stock === "number"
               );
             });
           }
@@ -183,6 +184,24 @@ export class RecordsService {
           else {
             records = [];
           }
+
+          // Si la respuesta tiene el nombre del grupo, guárdalo
+          if (response && response.nameGroup) {
+            groupName = response.nameGroup;
+          } else if (
+            response &&
+            typeof response === "object" &&
+            response.group &&
+            response.group.nameGroup
+          ) {
+            groupName = response.group.nameGroup;
+          }
+
+          // Asignar el nombre del grupo a cada registro
+          records.forEach((record) => {
+            record.groupName = groupName || "";
+          });
+
           return records;
         }),
         tap((records) => {
@@ -202,7 +221,7 @@ export class RecordsService {
     const token = this.authGuard.getToken();
     return new HttpHeaders({
       Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     });
   }
 

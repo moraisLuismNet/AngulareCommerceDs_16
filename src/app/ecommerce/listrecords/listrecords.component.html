@@ -30,9 +30,12 @@
       >
         <ng-template pTemplate="header">
           <tr>
-            <th>{{ groupName }}</th>
+            <th>Photo</th>
             <th style="font-size: 15px" pSortableColumn="titleRecord">
               Title <p-sortIcon field="titleRecord"></p-sortIcon>
+            </th>
+            <th style="font-size: 15px" pSortableColumn="groupName">
+              Group <p-sortIcon field="groupName"></p-sortIcon>
             </th>
             <th style="font-size: 15px" pSortableColumn="yearOfPublication">
               Year <p-sortIcon field="yearOfPublication"></p-sortIcon>
@@ -45,6 +48,7 @@
           <tr>
             <td><img src="{{ record.imageRecord }}" width="80" /></td>
             <td style="font-size: 14px">{{ record.titleRecord }}</td>
+            <td style="font-size: 14px">{{ record.groupName }}</td>
             <td>{{ record.yearOfPublication }}</td>
             <td>{{ record.price }}</td>
             <td>{{ record.stock }}</td>

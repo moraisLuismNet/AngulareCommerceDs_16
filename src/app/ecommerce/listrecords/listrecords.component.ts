@@ -1,42 +1,42 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
-import { ConfirmationService } from 'primeng/api';
-import { IRecord } from '../ecommerce.interface';
-import { ActivatedRoute, Router } from '@angular/router';
-import { RecordsService } from '../services/records.service';
-import { GroupsService } from '../services/groups.service';
-import { NavbarComponent } from 'src/app/shared/navbar/navbar.component';
-import { CartService } from 'src/app/ecommerce/services/cart.service';
-import { CartDetailService } from '../services/cart-detail.service';
-import { UserService } from 'src/app/services/user.service';
-import { Subject, of, throwError } from 'rxjs';
+import { Component, OnInit, OnDestroy, ViewChild } from "@angular/core";
+import { ConfirmationService } from "primeng/api";
+import { IRecord } from "../ecommerce.interface";
+import { ActivatedRoute, Router } from "@angular/router";
+import { RecordsService } from "../services/records.service";
+import { GroupsService } from "../services/groups.service";
+import { NavbarComponent } from "src/app/shared/navbar/navbar.component";
+import { CartService } from "src/app/ecommerce/services/cart.service";
+import { CartDetailService } from "../services/cart-detail.service";
+import { UserService } from "src/app/services/user.service";
+import { Subject, of, throwError } from "rxjs";
 import {
   takeUntil,
   finalize,
   switchMap,
   map,
   catchError,
-} from 'rxjs/operators';
-import { StockService } from '../services/stock.service';
-import { AuthGuard } from 'src/app/guards/auth-guard.service';
+} from "rxjs/operators";
+import { StockService } from "../services/stock.service";
+import { AuthGuard } from "src/app/guards/auth-guard.service";
 
 @Component({
-  selector: 'app-listrecords',
-  templateUrl: './listrecords.component.html',
-  styleUrls: ['./listrecords.component.css'],
+  selector: "app-listrecords",
+  templateUrl: "./listrecords.component.html",
+  styleUrls: ["./listrecords.component.css"],
   providers: [ConfirmationService],
 })
 export class ListrecordsComponent implements OnInit, OnDestroy {
   @ViewChild(NavbarComponent, { static: false }) navbar!: NavbarComponent;
   records: IRecord[] = [];
   filteredRecords: IRecord[] = [];
-  searchText: string = '';
+  searchText: string = "";
   cart: IRecord[] = [];
   groupId: string | null = null;
-  groupName: string = '';
-  errorMessage: string = '';
+  groupName: string = "";
+  errorMessage: string = "";
   visibleError: boolean = false;
   visiblePhoto: boolean = false;
-  photo: string = '';
+  photo: string = "";
   cartItemsCount: number = 0;
   isAddingToCart = false;
   private readonly destroy$ = new Subject<void>();
@@ -45,7 +45,7 @@ export class ListrecordsComponent implements OnInit, OnDestroy {
 
   record: IRecord = {
     idRecord: 0,
-    titleRecord: '',
+    titleRecord: "",
     yearOfPublication: null,
     imageRecord: null,
     photo: null,
@@ -54,8 +54,8 @@ export class ListrecordsComponent implements OnInit, OnDestroy {
     stock: 0,
     discontinued: false,
     groupId: null,
-    groupName: '',
-    nameGroup: '',
+    groupName: "",
+    nameGroup: "",
   };
   userEmail: string | null = null;
 
@@ -74,12 +74,12 @@ export class ListrecordsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.route.paramMap.pipe(takeUntil(this.destroy$)).subscribe((params) => {
-      const idGroup = params.get('idGroup');
+      const idGroup = params.get("idGroup");
       if (idGroup) {
         this.groupId = idGroup;
         this.loadRecords(idGroup);
       } else {
-        this.errorMessage = 'No group ID provided';
+        this.errorMessage = "No group ID provided";
         this.visibleError = true;
       }
     });
@@ -103,7 +103,7 @@ export class ListrecordsComponent implements OnInit, OnDestroy {
         this.cartEnabled = status.enabled;
       },
       error: (error) => {
-        console.error('Error checking cart status:', error);
+        console.error("Error checking cart status:", error);
         this.cartEnabled = true;
       },
     });
@@ -133,8 +133,8 @@ export class ListrecordsComponent implements OnInit, OnDestroy {
     this.stockService.stockUpdate$
       .pipe(takeUntil(this.destroy$))
       .subscribe(({ recordId, newStock }) => {
-        if (typeof newStock !== 'number') {
-          console.error('Invalid stock value received:', newStock);
+        if (typeof newStock !== "number") {
+          console.error("Invalid stock value received:", newStock);
           return;
         }
         // Update stock in both records and filteredRecords arrays
@@ -163,18 +163,18 @@ export class ListrecordsComponent implements OnInit, OnDestroy {
 
   confirm(): void {
     this.confirmationService.confirm({
-      message: 'Are you sure you want to continue?',
+      message: "Are you sure you want to continue?",
       accept: () => {},
     });
   }
 
   isLoggedIn(): boolean {
-    return !!sessionStorage.getItem('user');
+    return !!sessionStorage.getItem("user");
   }
 
   loadRecords(idGroup: string): void {
     this.loading = true;
-    this.errorMessage = '';
+    this.errorMessage = "";
     this.visibleError = false;
 
     // First we synchronize the cart with the backend
@@ -187,7 +187,7 @@ export class ListrecordsComponent implements OnInit, OnDestroy {
       .pipe(
         switchMap((records: IRecord[]) => {
           if (!records || records.length === 0) {
-            this.errorMessage = 'No records found for this group';
+            this.errorMessage = "No records found for this group";
             this.visibleError = true;
             return of([]);
           }
@@ -224,8 +224,8 @@ export class ListrecordsComponent implements OnInit, OnDestroy {
           this.filterRecords();
         },
         error: (error) => {
-          console.error('Error loading records:', error);
-          this.errorMessage = 'Error loading records';
+          console.error("Error loading records:", error);
+          this.errorMessage = "Error loading records";
           this.visibleError = true;
         },
       });
@@ -240,8 +240,8 @@ export class ListrecordsComponent implements OnInit, OnDestroy {
           this.groupName = nameGroup;
         },
         error: (error) => {
-          console.error('Error loading group name:', error);
-          this.errorMessage = 'Error loading group name';
+          console.error("Error loading group name:", error);
+          this.errorMessage = "Error loading group name";
           this.visibleError = true;
         },
       });
@@ -287,7 +287,7 @@ export class ListrecordsComponent implements OnInit, OnDestroy {
     }
 
     this.isAddingToCart = true;
-    this.errorMessage = '';
+    this.errorMessage = "";
     this.visibleError = false;
 
     this.cartService
@@ -296,9 +296,9 @@ export class ListrecordsComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (updatedRecord) => {},
         error: (error) => {
-          this.errorMessage = error.message || 'Error adding to cart';
+          this.errorMessage = error.message || "Error adding to cart";
           this.visibleError = true;
-          console.error('Error adding:', error);
+          console.error("Error adding:", error);
         },
       });
   }
@@ -329,8 +329,8 @@ export class ListrecordsComponent implements OnInit, OnDestroy {
           }
         },
         error: (error) => {
-          console.error('Error deleting item from cart:', error);
-          this.errorMessage = 'Error deleting item from cart';
+          console.error("Error deleting item from cart:", error);
+          this.errorMessage = "Error deleting item from cart";
           this.visibleError = true;
         },
       });
