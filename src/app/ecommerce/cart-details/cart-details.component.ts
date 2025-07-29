@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Subject, of } from 'rxjs';
-import { takeUntil, filter, map, catchError, tap } from 'rxjs/operators';
+import { Subject, of, forkJoin } from 'rxjs';
+import { takeUntil, filter, map, catchError, tap, switchMap } from 'rxjs/operators';
 import { ICartDetail, IRecord } from '../ecommerce.interface';
 import { AuthGuard } from 'src/app/guards/auth-guard.service';
 import { UserService } from 'src/app/services/user.service';
@@ -8,6 +8,7 @@ import { CartDetailService } from '../services/cart-detail.service';
 import { CartService } from 'src/app/ecommerce/services/cart.service';
 import { ActivatedRoute } from '@angular/router';
 import { OrderService } from '../services/order.service';
+import { GroupsService } from '../services/groups.service';
 
 interface CartDetailItem {
   idCartDetail: number;
@@ -25,9 +26,21 @@ interface CartResponse {
   $values?: CartDetailItem[];
 }
 
-interface ExtendedCartDetail extends ICartDetail {
+interface IGroup {
+  idGroup: number;
+  nameGroup: string;
+  // Agrega aquí otros campos si son necesarios
+}
+
+interface GroupResponse {
+  $values?: IGroup[];
+  // Agrega aquí otros campos de respuesta si son necesarios
+}
+
+interface ExtendedCartDetail extends Omit<ICartDetail, 'recordTitle'> {
   stock?: number;
   groupName?: string;
+  price?: number;
 }
 
 @Component({
@@ -53,7 +66,8 @@ export class CartDetailsComponent implements OnInit, OnDestroy {
     private readonly authGuard: AuthGuard,
     private readonly userService: UserService,
     private readonly cartService: CartService,
-    private readonly orderService: OrderService
+    private readonly orderService: OrderService,
+    private readonly groupsService: GroupsService
   ) {}
 
   ngOnInit(): void {
@@ -111,26 +125,58 @@ export class CartDetailsComponent implements OnInit, OnDestroy {
   }
 
   private loadRecordDetails(): void {
-    this.filteredCartDetails.forEach((detail) => {
-      this.cartDetailService
-        .getRecordDetails(detail.recordId)
-        .pipe(
-          takeUntil(this.destroy$),
-          filter((record): record is IRecord => record !== null)
-        )
-        .subscribe((record) => {
-          const index = this.filteredCartDetails.findIndex(
-            (d) => d.recordId === detail.recordId
-          );
-          if (index !== -1) {
-            const updatedDetail = {
-              ...this.filteredCartDetails[index],
-              stock: record.stock,
-              groupName: record.groupName,
-            } as ExtendedCartDetail;
-            this.filteredCartDetails[index] = updatedDetail;
+    // Primero obtenemos todos los grupos para tener los nombres
+    this.groupsService.getGroups().pipe(
+      takeUntil(this.destroy$),
+      switchMap((groupsResponse: IGroup[] | GroupResponse) => {
+        // Convertir la respuesta a un array de grupos
+        const groups = Array.isArray(groupsResponse) 
+          ? groupsResponse 
+          : (groupsResponse as GroupResponse)?.$values || [];
+        
+        // Crear un mapa de groupId a groupName para búsqueda rápida
+        const groupMap = new Map<number, string>();
+        groups.forEach((group: IGroup) => {
+          if (group?.idGroup) {
+            groupMap.set(group.idGroup, group.nameGroup || '');
           }
         });
+
+        // Para cada detalle en el carrito, obtener los detalles del registro y asignar el groupName
+        const recordDetails$ = this.filteredCartDetails.map(detail => 
+          this.cartDetailService.getRecordDetails(detail.recordId).pipe(
+            filter((record): record is IRecord => record !== null),
+            map(record => ({
+              detail,
+              record,
+              groupName: record.groupId ? groupMap.get(record.groupId) || '' : ''
+            }))
+          )
+        );
+
+        return forkJoin(recordDetails$);
+      })
+    ).subscribe(results => {
+      results.forEach(({ detail, record, groupName }) => {
+        const index = this.filteredCartDetails.findIndex(
+          d => d.recordId === detail.recordId
+        );
+        
+        if (index !== -1) {
+          const updatedDetail = {
+            ...this.filteredCartDetails[index],
+            stock: record.stock,
+            groupName: groupName || record.groupName || '',
+            titleRecord: record.titleRecord || this.filteredCartDetails[index].titleRecord,
+            price: record.price || this.filteredCartDetails[index].price
+          } as ExtendedCartDetail;
+          
+          this.filteredCartDetails[index] = updatedDetail;
+        }
+      });
+      
+      // Forzar la actualización de la vista
+      this.filteredCartDetails = [...this.filteredCartDetails];
     });
   }
 
