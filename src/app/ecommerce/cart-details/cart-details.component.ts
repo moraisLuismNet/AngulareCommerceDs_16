@@ -29,12 +29,10 @@ interface CartResponse {
 interface IGroup {
   idGroup: number;
   nameGroup: string;
-  // Agrega aquí otros campos si son necesarios
 }
 
 interface GroupResponse {
   $values?: IGroup[];
-  // Agrega aquí otros campos de respuesta si son necesarios
 }
 
 interface ExtendedCartDetail extends Omit<ICartDetail, 'recordTitle'> {
@@ -125,16 +123,16 @@ export class CartDetailsComponent implements OnInit, OnDestroy {
   }
 
   private loadRecordDetails(): void {
-    // Primero obtenemos todos los grupos para tener los nombres
+    // First we get all the groups to have the names
     this.groupsService.getGroups().pipe(
       takeUntil(this.destroy$),
       switchMap((groupsResponse: IGroup[] | GroupResponse) => {
-        // Convertir la respuesta a un array de grupos
+        // Convert the response to an array of groups
         const groups = Array.isArray(groupsResponse) 
           ? groupsResponse 
           : (groupsResponse as GroupResponse)?.$values || [];
         
-        // Crear un mapa de groupId a groupName para búsqueda rápida
+        // Create a map of groupId to groupName for quick search
         const groupMap = new Map<number, string>();
         groups.forEach((group: IGroup) => {
           if (group?.idGroup) {
@@ -142,7 +140,7 @@ export class CartDetailsComponent implements OnInit, OnDestroy {
           }
         });
 
-        // Para cada detalle en el carrito, obtener los detalles del registro y asignar el groupName
+        // For each detail in the cart, get the record details and assign the groupName
         const recordDetails$ = this.filteredCartDetails.map(detail => 
           this.cartDetailService.getRecordDetails(detail.recordId).pipe(
             filter((record): record is IRecord => record !== null),
@@ -175,7 +173,7 @@ export class CartDetailsComponent implements OnInit, OnDestroy {
         }
       });
       
-      // Forzar la actualización de la vista
+      // Force view refresh
       this.filteredCartDetails = [...this.filteredCartDetails];
     });
   }
