@@ -192,14 +192,14 @@
         </ng-template>
         <ng-template pTemplate="body" let-record>
           <tr>
-            <td style="font-size: 15px">{{ record.groupName }}</td>
+            <td style="font-size: 14px">{{ record.groupName }}</td>
             <td><img src="{{ record.imageRecord }}" width="80" /></td>
-            <td style="font-size: 15px">{{ record.titleRecord }}</td>
-            <td style="font-size: 15px">{{ record.yearOfPublication }}</td>
-            <td style="font-size: 15px">
+            <td style="font-size: 14px">{{ record.titleRecord }}</td>
+            <td style="font-size: 14px">{{ record.yearOfPublication }}</td>
+            <td style="font-size: 14px">
               {{ record.price | number : "1.2-2" }} €
             </td>
-            <td style="font-size: 15px">{{ record.stock }}</td>
+            <td style="font-size: 14px">{{ record.stock }}</td>
             <td style="font-size: 15px">
               {{ record.discontinued ? "Yes" : "No" }}
             </td>
