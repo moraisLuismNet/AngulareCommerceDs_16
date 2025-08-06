@@ -25,12 +25,12 @@ AngulareCommerceDs_16/
 │   │   │   ├───genres.component.html    
 │   │   │   └───genres.component.ts  
 │   │   ├───groups/  
-│   │   │   ├───groups.component.css 
-│   │   │   ├───groups.component.html    
+│   │   │   ├───groups.component.css   
+│   │   │   ├───groups.component.html      
 │   │   │   └───groups.component.ts  
 │   │   ├───listgroups/  
-│   │   │   ├───listgroups.component.css 
-│   │   │   ├───listgroups.component.html  
+│   │   │   ├───listgroups.component.css     
+│   │   │   ├───listgroups.component.html      
 │   │   │   └───listgroups.component.ts  
 │   │   ├───listrecords/  
 │   │   │   ├───listrecords.component.css   
@@ -41,8 +41,8 @@ AngulareCommerceDs_16/
 │   │   │   ├───orders.component.html  
 │   │   │   └───orders.component.ts  
 │   │   ├───records/  
-│   │   │   ├───records.component.css   
-│   │   │   ├───records.component.html 
+│   │   │   ├───records.component.css     
+│   │   │   ├───records.component.html   
 │   │   │   └───records.component.ts  
 │   │   ├───services/  
 │   │   │   ├───cart.service.ts  
@@ -83,8 +83,8 @@ AngulareCommerceDs_16/
 │   │   │   ├───register.component.css  
 │   │   │   ├───register.component.html  
 │   │   │   └───register.component.ts  
-│   │   └───shared.module.ts  
-│   ├───app.component.css
+│   │   └───shared.module.ts    
+│   ├───app.component.css  
 │   ├───app.component.html  
 │   ├───app.component.ts  
 │   ├───app.module.ts  
@@ -95,20 +95,20 @@ AngulareCommerceDs_16/
 ├───angular.json  
 └───package.json  
 
-![AngulareCommderceDs](img/1.png)
-![AngulareCommderceDs](img/2.png)
-![AngulareCommderceDs](img/3.png)
-![AngulareCommderceDs](img/4.png)
-![AngulareCommderceDs](img/5.png)
-![AngulareCommderceDs](img/6.png)
-![AngulareCommderceDs](img/7.png)
-![AngulareCommderceDs](img/8.png)
-![AngulareCommderceDs](img/9.png)
+![AngulareCommderceDs](img/00.png)
+![AngulareCommderceDs](img/01.png)
+![AngulareCommderceDs](img/02.png)
+![AngulareCommderceDs](img/03.png)
+![AngulareCommderceDs](img/04.png)
+![AngulareCommderceDs](img/05.png)
+![AngulareCommderceDs](img/06.png)
+![AngulareCommderceDs](img/07.png)
+![AngulareCommderceDs](img/08.png)
+![AngulareCommderceDs](img/09.png)
 ![AngulareCommderceDs](img/10.png)
 ![AngulareCommderceDs](img/11.png)
 ![AngulareCommderceDs](img/12.png)
 ![AngulareCommderceDs](img/13.png)
-![AngulareCommderceDs](img/14.png)
 
 ## environment
 
